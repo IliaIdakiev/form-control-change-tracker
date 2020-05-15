@@ -1,0 +1,30 @@
+Has from changes: {{hasFormChanges}}
+<button [disabled]="unpopulated" (click)="unpopulated = true">Unpopulated</button>
+<button [disabled]="!unpopulated" (click)="unpopulated = false">Populated</button>
+<div *ngIf="unpopulated">
+  <form>
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" name="firstName" [ngModel]="unpopulatedDummyData.firstName" hgChangeTracker />
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" name="lastName" [ngModel]="unpopulatedDummyData.lastName" hgChangeTracker />
+    </div>
+    <button [disabled]="!hasFormChanges">Submit</button>
+  </form>
+</div>
+<div *ngIf="!unpopulated">
+  <form>
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" name="firstName" [ngModel]="populatedDummyData.firstName" hgChangeTracker />
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" name="lastName" [ngModel]="populatedDummyData.lastName" hgChangeTracker />
+    </div>
+    <button [disabled]="!hasFormChanges">Submit</button>
+  </form>
+</div>
+<button [disabled]="!hasFormChanges" (click)="reset()">Set current data as default</button>

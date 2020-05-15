@@ -1,0 +1,24 @@
+{
+  "extends": "../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "hg",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "hg",
+      "kebab-case"
+    ],
+    "variable-name": {
+      "options": [
+        "allow-leading-underscore"
+      ]
+    },
+    "only-arrow-functions": false,
+    "space-before-function-paren": false
+  }
+}
