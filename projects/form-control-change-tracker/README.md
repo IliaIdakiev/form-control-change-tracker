@@ -1,24 +1,59 @@
-# FormControlChangeTracker
+# Angular Form Control Change Tracker
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.6.
+Very often when developers need to know if there were any changes inside the a form in order to present a unsaved changes confirmation dialog when navigating away or in order to disable the save button when there is nothing new to save. The `FormControlChangeTrackerModule` provides two things: 
 
-## Code scaffolding
+* The `ChangeTrackerDirective (hgChangeTracker)` that can be set on the individual form controls in order to track if any changes are made 
 
-Run `ng generate component component-name --project form-control-change-tracker` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project form-control-change-tracker`.
-> Note: Don't forget to add `--project form-control-change-tracker` or else it will be added to the default project in your `angular.json` file. 
+* And the `@hasChanges()` decorator that is applied over the `ChangeTrackerDirective` directives in order to provide you a boolean value indicating if there are any changes or not.
 
-## Build
+## Usage:
 
-Run `ng build form-control-change-tracker` to build the project. The build artifacts will be stored in the `dist/` directory.
+1. Import the module
 
-## Publishing
+your.module.ts
+```typescript
+@NgModule({
+  ...
+  imports: [
+    ...
+    FormControlChangeTrackerModule
+  ]
+})
+export class AppModule { }
+```
+2. Add the directives and bind the initial value for each one.(the current example is using reactive forms but the module can be used with template driven forms as well. [Check out the demo app](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker))
 
-After building your library with `ng build form-control-change-tracker`, go to the dist folder `cd dist/form-control-change-tracker` and run `npm publish`.
+your.component.html
+```html
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form-group">
+    <label>First Name</label>
+    <input type="text" name="firstName" formControlName="firstName" hgChangeTracker
+      [initialValue]="form.get('firstName').value" />
+  </div>
+  <div class="form-group">
+    <label>Last Name</label>
+    <input type="text" name="lastName" formControlName="lastName" hgChangeTracker
+      [initialValue]="form.get('lastName').value" />
+  </div>
+  <button [disabled]="!hasFormChanges">Submit</button>
+</form>
+```
 
-## Running unit tests
+3. Get the `hasFormChanges` value
 
-Run `ng test form-control-change-tracker` to execute the unit tests via [Karma](https://karma-runner.github.io).
+your.component.ts
+```typescript
+@Component({
+  ...
+})
+export class TemplateFromComponent {
 
-## Further help
+  @ViewChildren(ChangeTrackerDirective) @hasChanges() hasFormChanges: boolean;
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+  ...
+
+}
+```
+
+**[Check out the demo app](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker)**
