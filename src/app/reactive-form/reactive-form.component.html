@@ -1,1 +1,48 @@
-<p>reactive-form works!</p>
+Has from changes: {{hasFormChanges}}
+<button [disabled]="unpopulated" (click)="unpopulated = true">Unpopulated</button>
+<button [disabled]="!unpopulated" (click)="unpopulated = false">Populated</button>
+<div *ngIf="unpopulated">
+  <form [formGroup]="unpopulatedForm" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" name="firstName" formControlName="firstName" hgChangeTracker
+        [initialValue]="unpopulatedForm.get('firstName').value" />
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" name="lastName" formControlName="lastName" hgChangeTracker multiInitialValue
+        [initialValue]="lastNameInitialValues" />
+      <span>Multiple initial values: {{lastNameInitialValues | json }}</span>
+      <button [disabled]="lastNameInitialValues.includes(unpopulatedForm.get('lastName').value)"
+        (click)="addToInitialValues(unpopulatedForm.get('lastName').value)">Add
+        current value to initial values</button>
+    </div>
+    <div class="form-group">
+      <label>Gender</label>
+      <select name="gender" formControlName="gender" hgChangeTracker
+        [initialValue]="unpopulatedForm.get('gender').value">
+        <option [ngValue]="null">Select Gender...</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+    </div>
+    <button [disabled]="!hasFormChanges">Submit</button>
+  </form>
+  {{unpopulatedForm.value | json}}
+</div>
+<div *ngIf="!unpopulated">
+  <form [formGroup]="populatedForm" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" name="firstName" formControlName="firstName" hgChangeTracker
+        [initialValue]="populatedForm.get('firstName').value" />
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" name="lastName" formControlName="lastName" hgChangeTracker
+        [initialValue]="populatedForm.get('lastName').value" />
+    </div>
+    <button [disabled]="!hasFormChanges">Submit</button>
+  </form>
+</div>
+<button [disabled]="!hasFormChanges" (click)="reset()">Set current data as default</button>
