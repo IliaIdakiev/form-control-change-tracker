@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 const NOT_SET = Symbol('NOT_SET');
 
 @Directive({
-  selector: '[hgChangeTracker]',
+  selector: '[ngModel][hgChangeTracker],[formControl][hgChangeTracker],[formControlName][hgChangeTracker]',
   exportAs: 'hgChangeTracker'
 })
 export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
@@ -30,8 +30,6 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
 
   hasValueChanged = false;
 
-  @Input() typeBasedFalsyValues = false;
-  @Input() value: any = NOT_SET;
   @Input() type: any = NOT_SET;
   @Input() multiInitialValue = false;
   @Input() disableAutoInitialValueSync = true;

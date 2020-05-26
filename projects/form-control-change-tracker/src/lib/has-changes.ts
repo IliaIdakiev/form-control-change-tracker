@@ -8,7 +8,11 @@ const _configureWatch = Symbol('configureWatch');
 const _hasChanges = Symbol('hasChanges');
 const _isAlive = Symbol('isAlive');
 
-export function hasChanges() {
+function getDefaultValueForConfig(config?: { includeChangedValues: boolean }) {
+  return config && config.includeChangedValues ? { hasChanges: false, values: {} } : false;
+}
+
+export function hasChanges(config?: { includeChangedValues: boolean }) {
   return function (target: any, propertyKey: string) {
     Object.defineProperty(target, propertyKey, {
       set(items: QueryList<ChangeTrackerDirective>) {
@@ -19,7 +23,15 @@ export function hasChanges() {
           combineLatest(currentItems.map(i => ((i as any)._change as Subject<any>))).pipe(
             takeUntil(this[_isAlive]), observeOn(asyncScheduler)
           ).subscribe(newValue => {
-            return this[_hasChanges] = newValue.includes(true);
+            if (config && config.includeChangedValues) {
+              this[_hasChanges].hasChanges = newValue.includes(true);
+              this[_hasChanges].values = currentItems.reduce((acc, curr) => {
+                acc[(curr as any).ngControl.name] = { initial: curr.initialValue, current: curr.currentValue };
+                return acc;
+              }, this[_hasChanges].values);
+              return;
+            }
+            this[_hasChanges] = newValue.includes(true);
           });
         };
         this[_configureWatch]();
@@ -29,7 +41,8 @@ export function hasChanges() {
         });
       },
       get() {
-        return this[_hasChanges] || false;
+        if (this[_hasChanges] === undefined) { this[_hasChanges] = getDefaultValueForConfig(config); }
+        return this[_hasChanges];
       }
     });
 

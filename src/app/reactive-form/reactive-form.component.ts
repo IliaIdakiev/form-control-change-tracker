@@ -1,6 +1,13 @@
 import { Component, ViewChildren, QueryList } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ChangeTrackerDirective, hasChanges } from 'form-control-change-tracker';
+import { ChangesWithValues } from 'form-control-change-tracker';
+
+interface FormValues {
+  firstName: string;
+  lastName: string;
+  gender: string;
+}
 
 @Component({
   selector: 'app-reactive-form',
@@ -9,38 +16,52 @@ import { ChangeTrackerDirective, hasChanges } from 'form-control-change-tracker'
 })
 export class ReactiveFormComponent {
 
-  @ViewChildren(ChangeTrackerDirective) @hasChanges() hasFormChanges: boolean;
+  @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData: ChangesWithValues<FormValues>;
   @ViewChildren(ChangeTrackerDirective) changeTrackers: QueryList<ChangeTrackerDirective>;
+  get hasFormChanges() { return this.formChangesData.hasChanges; }
 
   unpopulated = true;
 
   lastNameInitialValues = ['', '123'];
 
+  unpopulatedFormDefaultValues = {
+    firstName: '',
+    lastName: '',
+    gender: null
+  };
+
   unpopulatedForm = this.fb.group({
-    firstName: [''],
-    lastName: [''],
-    gender: [null]
+    firstName: [this.unpopulatedFormDefaultValues.firstName],
+    lastName: [this.unpopulatedFormDefaultValues.lastName],
+    gender: [this.unpopulatedFormDefaultValues.gender]
   });
 
+  populatedFormDefaultValues = {
+    firstName: 'Test 1',
+    lastName: 'Test 2',
+    gender: 'male'
+  };
+
   populatedForm = this.fb.group({
-    firstName: ['Test 1'],
-    lastName: ['Test 2'],
-    gender: ['male']
+    firstName: [this.populatedFormDefaultValues.firstName],
+    lastName: [this.populatedFormDefaultValues.lastName],
+    gender: [this.populatedFormDefaultValues.gender]
   });
 
   constructor(private fb: FormBuilder) { }
 
-  resetInitialValues() { this.changeTrackers.forEach(i => i.resetInitialValue()); }
-
   addToInitialValues(value) {
     if (this.lastNameInitialValues.includes(value)) { return; }
     this.lastNameInitialValues = this.lastNameInitialValues.concat(value);
-    this.resetInitialValues();
   }
 
   reset() {
-    if (this.unpopulated) { this.addToInitialValues(this.unpopulatedForm.get('lastName').value); }
-    this.resetInitialValues();
+    if (this.unpopulated) {
+      this.addToInitialValues(this.unpopulatedForm.get('lastName').value);
+      this.unpopulatedFormDefaultValues = this.unpopulatedForm.value;
+      return;
+    }
+    this.populatedFormDefaultValues = this.populatedForm.value;
   }
 
   submit() {

@@ -30,12 +30,9 @@ export class TemplateFromComponent {
 
   constructor() { }
 
-  resetInitialValues() { this.changeTrackers.forEach(i => i.resetInitialValue()); }
-
   addToInitialValues(value) {
     if (this.lastNameInitialValues.includes(value)) { return; }
     this.lastNameInitialValues = this.lastNameInitialValues.concat(value);
-    this.resetInitialValues();
   }
 
   reset() {
@@ -45,7 +42,6 @@ export class TemplateFromComponent {
     } else {
       this.populatedDummyData = this.form.value;
     }
-    this.resetInitialValues();
   }
 
   submit() {
