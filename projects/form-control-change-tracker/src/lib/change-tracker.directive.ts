@@ -32,10 +32,10 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
 
   @Input() type: any = NOT_SET;
   @Input() multiInitialValue = false;
-  @Input() disableAutoInitialValueSync = true;
+  @Input() autoInitialValueSync = true;
 
   @Input() set initialValue(value: any) {
-    if (this._initialValue === NOT_SET || this.disableAutoInitialValueSync === true) { this._initialValue = value; return; }
+    if (this._initialValue === NOT_SET || this.autoInitialValueSync === true) { this._initialValue = value; return; }
     this._changedInitialValue = value;
   }
   get initialValue() { return this._initialValue; }

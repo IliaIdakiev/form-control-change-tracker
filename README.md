@@ -29,12 +29,12 @@ your.component.html
   <div class="form-group">
     <label>First Name</label>
     <input type="text" name="firstName" formControlName="firstName" hgChangeTracker
-      [initialValue]="form.get('firstName').value" />
+      [initialValue]="firstNameDefaultValue" />
   </div>
   <div class="form-group">
     <label>Last Name</label>
     <input type="text" name="lastName" formControlName="lastName" hgChangeTracker
-      [initialValue]="form.get('lastName').value" />
+      [initialValue]="lastNameDefaultValue" />
   </div>
   <button [disabled]="!hasFormChanges">Submit</button>
 </form>
@@ -57,3 +57,39 @@ export class TemplateFromComponent {
 ```
 
 **[Check out the demo app](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker)**
+
+4. More configurations
+
+### Decorator configuration
+
+your.component.ts
+```typescript
+@Component({
+  ...
+})
+export class TemplateFromComponent {
+
+  // ChangesWithValues<T> { hasChanges: boolean; values: { [P in keyof T]: { current: T[P]; initial: T[P]; }; }; } (very useful for debugging)
+  @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData: ChangesWithValues<T>;
+  ...
+}
+```
+
+### Inputs
+
+change-tracker.directive
+```typescript 
+@Directive({
+  selector: '[ngModel][hgChangeTracker],[formControl][hgChangeTracker],[formControlName][hgChangeTracker]',
+  exportAs: 'hgChangeTracker'
+})
+export class ChangeTrackerDirective {
+
+  @Input() multiInitialValue = false; // used for multiple initial values
+  @Input() autoInitialValueSync = true; // it can be used to disable the auto syncing of initialValue input
+
+  // whenever the auto sync is disabled this method needs to be manually called in order for the new initial value to be set
+  // keep in mind that the newValue is optional and if omitted the last change of the initialValue binding will be the new initial value
+  resetInitialValue(newValue?: T) { ... }
+}
+```
