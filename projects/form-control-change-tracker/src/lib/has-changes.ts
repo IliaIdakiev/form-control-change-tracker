@@ -2,6 +2,7 @@ import { QueryList } from '@angular/core';
 import { ChangeTrackerDirective } from './change-tracker.directive';
 import { combineLatest, Subject, asyncScheduler } from 'rxjs';
 import { takeUntil, observeOn } from 'rxjs/operators';
+import { NgControl } from '@angular/forms';
 
 const _items = Symbol('items');
 const _configureWatch = Symbol('configureWatch');
@@ -26,7 +27,14 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
             if (config && config.includeChangedValues) {
               this[_hasChanges].hasChanges = newValue.includes(true);
               this[_hasChanges].values = currentItems.reduce((acc, curr) => {
-                acc[(curr as any).ngControl.name] = { initial: curr.initialValue, current: curr.currentValue };
+                const ngControl: NgControl = (curr as any).ngControl;
+                ngControl.path.reduce((pathAcc, currPath, index, arr) => {
+                  if (arr.length - 1 === index) {
+                    return pathAcc[currPath] = { initial: curr.initialValue, current: curr.currentValue };
+                  }
+                  return pathAcc[currPath] = pathAcc[currPath] || {};
+                }, acc);
+
                 return acc;
               }, this[_hasChanges].values);
               return;

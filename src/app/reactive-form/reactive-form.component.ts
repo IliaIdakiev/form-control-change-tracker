@@ -27,13 +27,19 @@ export class ReactiveFormComponent {
   unpopulatedFormDefaultValues = {
     firstName: '',
     lastName: '',
-    gender: null
+    gender: null,
+    group: {
+      test: '1'
+    }
   };
 
   unpopulatedForm = this.fb.group({
     firstName: [this.unpopulatedFormDefaultValues.firstName],
     lastName: [this.unpopulatedFormDefaultValues.lastName],
-    gender: [this.unpopulatedFormDefaultValues.gender]
+    gender: [this.unpopulatedFormDefaultValues.gender],
+    group: this.fb.group({
+      test: [this.unpopulatedFormDefaultValues.group.test]
+    })
   });
 
   populatedFormDefaultValues = {
