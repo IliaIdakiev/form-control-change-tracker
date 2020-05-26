@@ -16,24 +16,35 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
   private _previousInitialValue: T | symbol = NOT_SET;
 
   private get _currentValue() {
-    return this.ngModel ? this.ngModel.control.value : this.ngControl ? this.ngControl.value : NOT_SET;
+    const value = this.ngControl ? this.ngControl.value : NOT_SET;
+    if (this.type === 'checkbox') {
+      return (this.ngControl as any).viewModel;
+    }
+    return value;
   }
+
+  get currentValue() { return this._currentValue; }
 
   private _destroying = false;
   private _change = new BehaviorSubject<any>(null);
 
   hasValueChanged = false;
 
+  @Input() typeBasedFalsyValues = false;
+  @Input() value: any = NOT_SET;
+  @Input() type: any = NOT_SET;
   @Input() multiInitialValue = false;
+  @Input() disableAutoInitialValueSync = true;
 
   @Input() set initialValue(value: any) {
-    if (this._initialValue === NOT_SET) { this._initialValue = value; return; }
+    if (this._initialValue === NOT_SET || this.disableAutoInitialValueSync === true) { this._initialValue = value; return; }
     this._changedInitialValue = value;
   }
+  get initialValue() { return this._initialValue; }
 
   resetInitialValue(newValue?: T) {
     this._previousInitialValue = this._initialValue;
-    this._initialValue = newValue === undefined ? NOT_SET : newValue;
+    this._initialValue = arguments.length === 0 ? NOT_SET : newValue;
   }
 
   get _hasValueChanged() {
@@ -80,9 +91,6 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
   }
 
   constructor(
-    @Optional() public ngModel: NgModel,
-    @Optional() private ngControl: NgControl,
-    private cd: ChangeDetectorRef
+    @Optional() private ngControl: NgControl
   ) { }
-
 }

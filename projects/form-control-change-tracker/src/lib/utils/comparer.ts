@@ -1,6 +1,6 @@
 export function comparer(initialValue, currentValue, compareObjectFieldFn = null): boolean {
   if ((!!initialValue && !currentValue) || (!initialValue && !!currentValue)) { return false; }
-  if (Array.isArray(initialValue)) {
+  if (Array.isArray(initialValue) && Array.isArray(currentValue)) {
     if (initialValue.length !== currentValue.length) { return false; }
     const result = initialValue.reduce((acc, value, idx) => {
       return acc && comparer(value, currentValue[idx], compareObjectFieldFn);
