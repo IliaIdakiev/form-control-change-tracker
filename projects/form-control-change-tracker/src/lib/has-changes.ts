@@ -42,8 +42,9 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
               takeUntil(this[_isAlive]), observeOn(asyncScheduler)
             ).subscribe((newValue) => {
               if (config && config.includeChangedValues) {
-                this[_hasChanges].hasChanges = newValue.includes(true);
-                this[_hasChanges].values = currentItems.reduce((acc, curr) => {
+                const _hasChangesValue = this[_hasChanges] || getDefaultValueForConfig(config);
+                _hasChangesValue.hasChanges = newValue.includes(true);
+                _hasChangesValue.values = currentItems.reduce((acc, curr) => {
                   const ngControl: NgControl = (curr as any).ngControl;
                   ngControl.path.reduce((pathAcc, currPath, index, arr) => {
                     if (arr.length - 1 === index) {
@@ -53,7 +54,7 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
                   }, acc);
 
                   return acc;
-                }, this[_hasChanges].values);
+                }, _hasChangesValue.values);
                 return;
               }
               this[_hasChanges] = newValue.includes(true);
