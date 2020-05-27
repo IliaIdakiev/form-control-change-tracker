@@ -1,7 +1,8 @@
-import { Directive, Input, OnDestroy, DoCheck, Optional, ChangeDetectorRef } from '@angular/core';
-import { NgModel, FormControl, NgControl } from '@angular/forms';
+import { Directive, Input, OnDestroy, DoCheck, Optional, OnInit } from '@angular/core';
+import { NgControl, NgForm, FormGroup } from '@angular/forms';
 import { comparer } from './utils/comparer';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const NOT_SET = Symbol('NOT_SET');
 
@@ -9,11 +10,13 @@ const NOT_SET = Symbol('NOT_SET');
   selector: '[ngModel][hgChangeTracker],[formControl][hgChangeTracker],[formControlName][hgChangeTracker]',
   exportAs: 'hgChangeTracker'
 })
-export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
+export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck, OnInit {
 
   private _changedInitialValue: T | symbol = NOT_SET;
   private _initialValue: T | symbol = NOT_SET;
   private _previousInitialValue: T | symbol = NOT_SET;
+  private _isAlive$: Subject<void> = new Subject<void>();
+  private _isCheckScheduled = false;
 
   private get _currentValue() {
     const value = this.ngControl ? this.ngControl.value : NOT_SET;
@@ -35,6 +38,7 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
   @Input() autoInitialValueSync = true;
 
   @Input() set initialValue(value: any) {
+    this._scheduleCheck();
     if (this._initialValue === NOT_SET || this.autoInitialValueSync === true) { this._initialValue = value; return; }
     this._changedInitialValue = value;
   }
@@ -43,6 +47,7 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
   resetInitialValue(newValue?: T) {
     this._previousInitialValue = this._initialValue;
     this._initialValue = arguments.length === 0 ? NOT_SET : newValue;
+    this._scheduleCheck();
   }
 
   get _hasValueChanged() {
@@ -74,13 +79,19 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
 
   ngOnDestroy() {
     this._destroying = true;
+    this._isAlive$.next();
+    this._isAlive$.complete();
   }
 
   ngDoCheck() {
     if (this._previousInitialValue !== NOT_SET && this._initialValue === NOT_SET) {
       this._initialValue = this._changedInitialValue !== NOT_SET ? this._changedInitialValue : this._previousInitialValue;
       this._changedInitialValue = NOT_SET;
+      this._scheduleCheck();
     }
+  }
+
+  private _checkForChanges() {
     const currentHasValueChanged = this._hasValueChanged;
     if (currentHasValueChanged !== this.hasValueChanged) {
       this.hasValueChanged = currentHasValueChanged;
@@ -88,7 +99,18 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck {
     }
   }
 
-  constructor(
-    @Optional() private ngControl: NgControl
-  ) { }
+  private _scheduleCheck() {
+    if (this._isCheckScheduled) { return; }
+    this._isCheckScheduled = true;
+    Promise.resolve().then(() => {
+      this._isCheckScheduled = false;
+      this._checkForChanges();
+    });
+  }
+
+  constructor(private ngControl: NgControl) { }
+
+  ngOnInit() {
+    this.ngControl.control.valueChanges.pipe(takeUntil(this._isAlive$)).subscribe(() => { this._scheduleCheck(); });
+  }
 }

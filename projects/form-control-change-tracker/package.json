@@ -1,6 +1,6 @@
 {
   "name": "form-control-change-tracker",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "peerDependencies": {
     "@angular/common": "^9.1.6",
     "@angular/core": "^9.1.6",
