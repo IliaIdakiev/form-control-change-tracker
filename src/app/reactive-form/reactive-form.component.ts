@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ChangeTrackerDirective, hasChanges } from 'form-control-change-tracker';
 import { ChangesWithValues } from 'form-control-change-tracker';
 
+// Creating such interface is optional
 interface FormValues {
   firstName: string;
   lastName: string;
@@ -16,6 +17,7 @@ interface FormValues {
 })
 export class ReactiveFormComponent {
 
+  // ChangesWithValues has a default generic of any so you are not obligated creating an interface.
   @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData: ChangesWithValues<FormValues>;
   @ViewChildren(ChangeTrackerDirective) changeTrackers: QueryList<ChangeTrackerDirective>;
   get hasFormChanges() { return this.formChangesData.hasChanges; }
