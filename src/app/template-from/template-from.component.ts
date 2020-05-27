@@ -35,6 +35,11 @@ export class TemplateFromComponent {
     this.lastNameInitialValues = this.lastNameInitialValues.concat(value);
   }
 
+  // tslint:disable-next-line:use-lifecycle-interface
+  ngAfterViewInit() {
+    console.log(1323);
+  }
+
   reset() {
     if (this.unpopulated) {
       this.unpopulatedDummyData = this.form.value;

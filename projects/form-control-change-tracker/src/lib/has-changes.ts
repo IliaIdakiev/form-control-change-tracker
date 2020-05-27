@@ -11,6 +11,7 @@ const _isAlive = Symbol('isAlive');
 const _isViewReady = Symbol('isViewReady');
 const _isConfigureWatchScheduled = Symbol('isViewReady');
 const _watchSubscription = Symbol('watchSubscription');
+const _isInitialized = Symbol('isInitialized');
 
 function getDefaultValueForConfig(config?: { includeChangedValues: boolean }) {
   return config && config.includeChangedValues ? { hasChanges: false, values: {} } : false;
@@ -72,7 +73,10 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
       }
     });
 
-    const _originalNgAfterViewInit = target.ngAfterViewInit;
+    if (target[_isInitialized]) { return; }
+    target[_isInitialized] = true;
+
+    const _originalNgAfterViewInit = target.constructor.ɵcmp.afterViewInit;
     const _ngAfterViewInit: any = function () {
       this[_isViewReady] = true;
       this[_configureWatch]();
@@ -83,8 +87,7 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
     };
 
 
-    const _originalNgOnDestroy = target.ngOnDestroy;
-
+    const _originalNgOnDestroy = target.constructor.ɵcmp.onDestroy;
     const _ngOnDestroy: any = function () {
       (this[_isAlive] as Subject<void>).next();
       (this[_isAlive] as Subject<void>).complete();
@@ -93,11 +96,8 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
       }
     };
 
-    Object.defineProperty(target, 'ngAfterViewInit', {
-      get() { return _ngAfterViewInit; }
-    });
-    Object.defineProperty(target, 'ngOnDestroy', {
-      get() { return _ngOnDestroy; }
-    });
+    target.constructor.ɵcmp.afterViewInit = _ngAfterViewInit;
+    target.constructor.ɵcmp.onDestroy = _ngOnDestroy;
+
   };
 }
