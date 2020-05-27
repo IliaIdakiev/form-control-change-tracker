@@ -2,7 +2,7 @@ import { Directive, Input, OnDestroy, DoCheck, Optional, OnInit } from '@angular
 import { NgControl, NgForm, FormGroup } from '@angular/forms';
 import { comparer } from './utils/comparer';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, startWith } from 'rxjs/operators';
 
 const NOT_SET = Symbol('NOT_SET');
 
@@ -17,6 +17,7 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck, OnIn
   private _previousInitialValue: T | symbol = NOT_SET;
   private _isAlive$: Subject<void> = new Subject<void>();
   private _isCheckScheduled = false;
+  private _shouldForceEmissionOnCheck = false;
 
   private get _currentValue() {
     const value = this.ngControl ? this.ngControl.value : NOT_SET;
@@ -92,25 +93,29 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck, OnIn
   }
 
   private _checkForChanges() {
-    const currentHasValueChanged = this._hasValueChanged;
-    if (currentHasValueChanged !== this.hasValueChanged) {
-      this.hasValueChanged = currentHasValueChanged;
-      this._change.next(currentHasValueChanged);
-    }
+    const currentHasChangedValue = this._hasValueChanged;
+    if (currentHasChangedValue === this.hasValueChanged && this._shouldForceEmissionOnCheck === false) { return; }
+    this._shouldForceEmissionOnCheck = false;
+    this.hasValueChanged = currentHasChangedValue;
+    this._change.next(currentHasChangedValue);
   }
 
   private _scheduleCheck() {
-    if (this._isCheckScheduled) { return; }
+    if (this._isCheckScheduled) { return false; }
     this._isCheckScheduled = true;
     Promise.resolve().then(() => {
       this._isCheckScheduled = false;
       this._checkForChanges();
     });
+    return true;
   }
 
   constructor(private ngControl: NgControl) { }
 
   ngOnInit() {
-    this.ngControl.control.valueChanges.pipe(takeUntil(this._isAlive$)).subscribe(() => { this._scheduleCheck(); });
+    this.ngControl.control.valueChanges.pipe(takeUntil(this._isAlive$), startWith(null)).subscribe(() => {
+      this._shouldForceEmissionOnCheck = true;
+      this._scheduleCheck();
+    });
   }
 }
