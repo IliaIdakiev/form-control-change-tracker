@@ -54,7 +54,7 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
                   }, acc);
 
                   return acc;
-                }, _hasChangesValue.values);
+                }, {});
                 return;
               }
               this[_hasChanges] = newValue.includes(true);
