@@ -57,11 +57,11 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
     const _originalNgOnDestroy = target.ngOnDestroy;
 
     const _ngOnDestroy: any = function () {
+      (this[_isAlive] as Subject<void>).next();
+      (this[_isAlive] as Subject<void>).complete();
       if (_originalNgOnDestroy) {
         _originalNgOnDestroy.call(this);
       }
-      (this[_isAlive] as Subject<void>).next();
-      (this[_isAlive] as Subject<void>).complete();
     };
 
     Object.defineProperty(target, 'ngOnDestroy', {
