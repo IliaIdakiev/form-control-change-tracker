@@ -1,17 +1,15 @@
 import { QueryList } from '@angular/core';
 import { ChangeTrackerDirective } from './change-tracker.directive';
 import { combineLatest, Subject, asyncScheduler, asapScheduler, Subscription } from 'rxjs';
-import { takeUntil, observeOn } from 'rxjs/operators';
+import { takeUntil, observeOn, startWith, debounceTime } from 'rxjs/operators';
 import { NgControl } from '@angular/forms';
 
 const _items = Symbol('items');
 const _configureWatch = Symbol('configureWatch');
 const _hasChanges = Symbol('hasChanges');
 const _isAlive = Symbol('isAlive');
-const _isViewReady = Symbol('isViewReady');
 const _isConfigureWatchScheduled = Symbol('isViewReady');
 const _watchSubscription = Symbol('watchSubscription');
-const _isInitialized = Symbol('isInitialized');
 
 function getDefaultValueForConfig(config?: { includeChangedValues: boolean }) {
   return config && config.includeChangedValues ? { hasChanges: false, values: {} } : false;
@@ -21,10 +19,9 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
   return function (target: any, propertyKey: string) {
     Object.defineProperty(target, propertyKey, {
       set(items: QueryList<ChangeTrackerDirective>) {
-        if (this[_items] === items) { return; }
-        this[_isViewReady] = false;
         this[_isAlive] = new Subject();
         this[_items] = items;
+
         this[_configureWatch] = function () {
           if (this[_isConfigureWatchScheduled]) { return; }
           this[_isConfigureWatchScheduled] = true;
@@ -62,10 +59,13 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
           });
         };
 
-        items.changes.pipe(takeUntil(this[_isAlive])).subscribe((newItems: QueryList<ChangeTrackerDirective>) => {
-          this[_items] = newItems;
-          if (!this[_isViewReady]) { return; }
+        items.changes.pipe(startWith('<NOT_SET>'), debounceTime(1)).subscribe((newItems: QueryList<ChangeTrackerDirective>) => {
           this[_configureWatch]();
+          if (newItems as any === '<NOT_SET>') { return; }
+          this[_items] = newItems;
+        }, undefined, () => {
+          (this[_isAlive] as Subject<void>).next();
+          (this[_isAlive] as Subject<void>).complete();
         });
       },
       get() {
@@ -73,32 +73,5 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
         return this[_hasChanges];
       }
     });
-
-    if (target[_isInitialized]) { return; }
-    target[_isInitialized] = true;
-
-    const _originalNgAfterViewInit = target.constructor.ɵcmp.afterViewInit;
-    const _ngAfterViewInit: any = function () {
-      this[_isViewReady] = true;
-      this[_configureWatch]();
-
-      if (_originalNgAfterViewInit) {
-        _originalNgAfterViewInit.call(this);
-      }
-    };
-
-
-    const _originalNgOnDestroy = target.constructor.ɵcmp.onDestroy;
-    const _ngOnDestroy: any = function () {
-      (this[_isAlive] as Subject<void>).next();
-      (this[_isAlive] as Subject<void>).complete();
-      if (_originalNgOnDestroy) {
-        _originalNgOnDestroy.call(this);
-      }
-    };
-
-    target.constructor.ɵcmp.afterViewInit = _ngAfterViewInit;
-    target.constructor.ɵcmp.onDestroy = _ngOnDestroy;
-
   };
 }
