@@ -10,6 +10,7 @@ const _hasChanges = Symbol('hasChanges');
 const _isAlive = Symbol('isAlive');
 const _isConfigureWatchScheduled = Symbol('isViewReady');
 const _watchSubscription = Symbol('watchSubscription');
+const _itemsSubscription = Symbol('itemsSubscription');
 
 function getDefaultValueForConfig(config?: { includeChangedValues: boolean }) {
   return config && config.includeChangedValues ? { hasChanges: false, values: {} } : false;
@@ -59,7 +60,16 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
           });
         };
 
-        items.changes.pipe(startWith('<NOT_SET>'), debounceTime(1)).subscribe((newItems: QueryList<ChangeTrackerDirective>) => {
+        const proto = Object.getPrototypeOf(target);
+        if (proto[_itemsSubscription]) {
+          (proto[_itemsSubscription] as Subscription).unsubscribe();
+          (proto[_itemsSubscription] as Subscription) = undefined;
+        }
+
+        proto[_itemsSubscription] = items.changes.pipe(
+          startWith('<NOT_SET>'),
+          debounceTime(1)
+        ).subscribe((newItems: QueryList<ChangeTrackerDirective>) => {
           this[_configureWatch]();
           if (newItems as any === '<NOT_SET>') { return; }
           this[_items] = newItems;
