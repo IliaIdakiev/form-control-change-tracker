@@ -60,13 +60,13 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
           });
         };
 
-        const proto = Object.getPrototypeOf(target);
-        if (proto[_itemsSubscription]) {
-          (proto[_itemsSubscription] as Subscription).unsubscribe();
-          (proto[_itemsSubscription] as Subscription) = undefined;
+
+        if (this[_itemsSubscription]) {
+          (this[_itemsSubscription] as Subscription).unsubscribe();
+          (this[_itemsSubscription] as Subscription) = undefined;
         }
 
-        proto[_itemsSubscription] = items.changes.pipe(
+        this[_itemsSubscription] = items.changes.pipe(
           startWith('<NOT_SET>'),
           debounceTime(1)
         ).subscribe((newItems: QueryList<ChangeTrackerDirective>) => {
