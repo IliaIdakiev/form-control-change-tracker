@@ -33,7 +33,7 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
 
             if (this[_watchSubscription]) {
               (this[_watchSubscription] as Subscription).unsubscribe();
-              (this[_watchSubscription] as Subscription) = undefined;
+              this[_watchSubscription] = undefined;
             }
 
             this[_watchSubscription] = combineLatest(changeStreams).pipe(
@@ -44,12 +44,18 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
                 _hasChangesValue.hasChanges = newValue.includes(true);
                 _hasChangesValue.values = currentItems.reduce((acc, curr) => {
                   const ngControl: NgControl = (curr as any).ngControl;
-                  ngControl.path.reduce((pathAcc, currPath, index, arr) => {
+
+                  if (ngControl === null) {
+                    console.error('Form Control Change Tracker: No ngControl.control found!');;
+                    return acc;
+                  }
+
+                  ngControl.path?.reduce((pathAcc, currPath, index, arr) => {
                     if (arr.length - 1 === index) {
                       return pathAcc[currPath] = { initial: curr.initialValue, current: curr.currentValue };
                     }
                     return pathAcc[currPath] = pathAcc[currPath] || {};
-                  }, acc);
+                  }, acc as any);
 
                   return acc;
                 }, {});
@@ -63,7 +69,7 @@ export function hasChanges(config?: { includeChangedValues: boolean }) {
 
         if (this[_itemsSubscription]) {
           (this[_itemsSubscription] as Subscription).unsubscribe();
-          (this[_itemsSubscription] as Subscription) = undefined;
+          this[_itemsSubscription] = undefined;
         }
 
         this[_itemsSubscription] = items.changes.pipe(

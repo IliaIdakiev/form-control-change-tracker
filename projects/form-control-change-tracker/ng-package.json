@@ -3,11 +3,5 @@
   "dest": "../../dist/form-control-change-tracker",
   "lib": {
     "entryFile": "src/public-api.ts"
-  },
-  "whitelistedNonPeerDependencies": [
-    "tslib",
-    "@angular/common",
-    "@angular/core",
-    "@angular/forms"
-  ]
+  }
 }

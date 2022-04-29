@@ -11,7 +11,7 @@ Has from changes: {{hasFormChanges}}
     <div class="form-group">
       <label>Last Name</label>
       <input type="text" name="lastName" #lastName="ngModel" [ngModel]="unpopulatedDummyData.lastName" hgChangeTracker
-        multiInitialValue [initialValue]="lastNameInitialValues" />
+        [multiInitialValue]="true" [initialValue]="lastNameInitialValues" />
       <span>Multiple initial values: {{lastNameInitialValues | json }}</span>
       <button [disabled]="lastNameInitialValues.includes(lastName.value)"
         (click)="addToInitialValues(lastName.value)">Add
@@ -26,6 +26,7 @@ Has from changes: {{hasFormChanges}}
         <option value="female">Female</option>
       </select>
     </div>
+    <input type="hidden" name="object" [ngModel]="{ a: 1, b: 2 }" [initialValue]="{ b: 2, a: 1 }" hgChangeTracker>
     <button [disabled]="!hasFormChanges">Submit</button>
   </form>
   {{f.value | json}}

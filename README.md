@@ -1,95 +1,27 @@
-# Angular Form Control Change Tracker
+# FormControlChangeTracker
 
-Very often when developers need to know if there were any changes inside the a form in order to present a unsaved changes confirmation dialog when navigating away or in order to disable the save button when there is nothing new to save. The `FormControlChangeTrackerModule` provides two things: 
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.4.
 
-* The `ChangeTrackerDirective (hgChangeTracker)` that can be set on the individual form controls in order to track if any changes are made 
+## Development server
 
-* And the `@hasChanges()` decorator that is applied over the `ChangeTrackerDirective` directives in order to provide you a boolean value indicating if there are any changes or not.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Usage:
+## Code scaffolding
 
-1. Import the module
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-your.module.ts
-```typescript
-@NgModule({
-  ...
-  imports: [
-    ...
-    FormControlChangeTrackerModule
-  ]
-})
-export class AppModule { }
-```
-2. Add the directives and bind the initial value for each one.(the current example is using reactive forms but the module can be used with template driven forms as well. [Check out the demo app](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker))
+## Build
 
-your.component.html
-```html
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <div class="form-group">
-    <label>First Name</label>
-    <input type="text" name="firstName" formControlName="firstName" hgChangeTracker
-      [initialValue]="firstNameDefaultValue" />
-  </div>
-  <div class="form-group">
-    <label>Last Name</label>
-    <input type="text" name="lastName" formControlName="lastName" hgChangeTracker
-      [initialValue]="lastNameDefaultValue" />
-  </div>
-  <button [disabled]="!hasFormChanges">Submit</button>
-</form>
-```
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-3. Get the `hasFormChanges` value
+## Running unit tests
 
-your.component.ts
-```typescript
-@Component({
-  ...
-})
-export class TemplateFromComponent {
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-  @ViewChildren(ChangeTrackerDirective) @hasChanges() hasFormChanges: boolean;
+## Running end-to-end tests
 
-  ...
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
-}
-```
+## Further help
 
-**[Check out the demo app](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker)**
-
-4. More configurations
-
-### Decorator configuration
-
-your.component.ts
-```typescript
-@Component({
-  ...
-})
-export class TemplateFromComponent {
-
-  // ChangesWithValues<T> { hasChanges: boolean; values: { [P in keyof T]: { current: T[P]; initial: T[P]; }; }; } (very useful for debugging)
-  @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData: ChangesWithValues<T>;
-  ...
-}
-```
-
-### Inputs
-
-change-tracker.directive
-```typescript 
-@Directive({
-  selector: '[ngModel][hgChangeTracker],[formControl][hgChangeTracker],[formControlName][hgChangeTracker]',
-  exportAs: 'hgChangeTracker'
-})
-export class ChangeTrackerDirective {
-
-  @Input() multiInitialValue = false; // used for multiple initial values
-  @Input() autoInitialValueSync = true; // it can be used to disable the auto syncing of initialValue input
-
-  // whenever the auto sync is disabled this method needs to be manually called in order for the new initial value to be set
-  // keep in mind that the newValue is optional and if omitted the last change of the initialValue binding will be the new initial value
-  resetInitialValue(newValue?: T) { ... }
-}
-```
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.

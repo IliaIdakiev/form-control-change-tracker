@@ -1,24 +1,11 @@
 {
   "name": "form-control-change-tracker",
-  "version": "3.0.9",
+  "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^9.1.6",
-    "@angular/core": "^9.1.6",
-    "@angular/forms": "^9.1.6",
-    "tslib": "^1.10.0"
+    "@angular/common": "^13.3.0",
+    "@angular/core": "^13.3.0"
   },
-  "author": {
-    "name": "Iliya Idakiev",
-    "url": "https://developers.google.com/community/experts/directory/profile/profile-iliya_idakiev"
-  },
-  "homepage": "https://github.com/IliaIdakiev/form-control-change-tracker",
-  "license": "MIT",
-  "keywords": [
-    "form control changes",
-    "form control changes tracker",
-    "tracking form changes",
-    "form changes",
-    "angular",
-    "angular 9"
-  ]
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
 }

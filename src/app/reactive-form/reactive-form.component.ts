@@ -18,8 +18,8 @@ interface FormValues {
 export class ReactiveFormComponent {
 
   // ChangesWithValues has a default generic of any so you are not obligated creating an interface.
-  @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData: ChangesWithValues<FormValues>;
-  @ViewChildren(ChangeTrackerDirective) changeTrackers: QueryList<ChangeTrackerDirective>;
+  @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData!: ChangesWithValues<FormValues>;
+  @ViewChildren(ChangeTrackerDirective) changeTrackers!: QueryList<ChangeTrackerDirective>;
   get hasFormChanges() { return this.formChangesData.hasChanges; }
 
   unpopulated = true;
@@ -58,14 +58,14 @@ export class ReactiveFormComponent {
 
   constructor(private fb: FormBuilder) { }
 
-  addToInitialValues(value) {
+  addToInitialValues(value: any) {
     if (this.lastNameInitialValues.includes(value)) { return; }
     this.lastNameInitialValues = this.lastNameInitialValues.concat(value);
   }
 
   reset() {
-    if (this.unpopulated) {
-      this.addToInitialValues(this.unpopulatedForm.get('lastName').value);
+    if (this.unpopulated && !!this.unpopulatedForm.get('lastName')) {
+      this.addToInitialValues(this.unpopulatedForm.get('lastName')!.value);
       this.unpopulatedFormDefaultValues = this.unpopulatedForm.value;
       return;
     }

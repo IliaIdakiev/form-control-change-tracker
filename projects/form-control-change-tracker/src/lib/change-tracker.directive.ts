@@ -1,5 +1,5 @@
-import { Directive, Input, OnDestroy, DoCheck, Optional, OnInit } from '@angular/core';
-import { NgControl, NgForm, FormGroup } from '@angular/forms';
+import { Directive, Input, OnDestroy, DoCheck, OnInit } from '@angular/core';
+import { NgControl } from '@angular/forms';
 import { comparer } from './utils/comparer';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil, startWith } from 'rxjs/operators';
@@ -13,8 +13,8 @@ const NOT_SET = Symbol('NOT_SET');
 export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck, OnInit {
 
   private _changedInitialValue: T | symbol = NOT_SET;
-  private _initialValue: T | symbol = NOT_SET;
-  private _previousInitialValue: T | symbol = NOT_SET;
+  private _initialValue: T | symbol | undefined = NOT_SET;
+  private _previousInitialValue: T | symbol | undefined = NOT_SET;
   private _isAlive$: Subject<void> = new Subject<void>();
   private _isCheckScheduled = false;
   private _shouldForceEmissionOnCheck = false;
@@ -112,7 +112,11 @@ export class ChangeTrackerDirective<T = any> implements OnDestroy, DoCheck, OnIn
 
   constructor(private ngControl: NgControl) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    if (!this.ngControl.control) {
+      return void console.error('Form Control Change Tracker: No ngControl.control found!');;
+    }
+
     this.ngControl.control.valueChanges.pipe(takeUntil(this._isAlive$), startWith(null)).subscribe(() => {
       this._shouldForceEmissionOnCheck = true;
       this._scheduleCheck();

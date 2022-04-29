@@ -24,13 +24,13 @@ export class TemplateFromComponent {
 
   lastNameInitialValues = ['', '123'];
 
-  @ViewChildren(ChangeTrackerDirective) @hasChanges() hasFormChanges: boolean;
-  @ViewChildren(ChangeTrackerDirective) changeTrackers: QueryList<ChangeTrackerDirective>;
-  @ViewChild(NgForm) form: NgForm;
+  @ViewChildren(ChangeTrackerDirective) @hasChanges() hasFormChanges!: boolean;
+  @ViewChildren(ChangeTrackerDirective) changeTrackers!: QueryList<ChangeTrackerDirective>;
+  @ViewChild(NgForm) form!: NgForm;
 
   constructor() { }
 
-  addToInitialValues(value) {
+  addToInitialValues(value: any) {
     if (this.lastNameInitialValues.includes(value)) { return; }
     this.lastNameInitialValues = this.lastNameInitialValues.concat(value);
   }

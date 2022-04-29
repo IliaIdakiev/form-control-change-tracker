@@ -1,20 +1,18 @@
-export function comparer(initialValue, currentValue, compareObjectFieldFn = null): boolean {
-  if ((!!initialValue && !currentValue) || (!initialValue && !!currentValue)) { return false; }
-  if (Array.isArray(initialValue) && Array.isArray(currentValue)) {
-    if (initialValue.length !== currentValue.length) { return false; }
-    const result = initialValue.reduce((acc, value, idx) => {
-      return acc && comparer(value, currentValue[idx], compareObjectFieldFn);
-    }, true);
-    return result;
-  } else if (typeof initialValue === 'object' && initialValue !== null) {
-    const initialKeys = Object.keys(initialValue);
-    const currentKeys = Object.keys(currentValue);
-    const result = initialKeys.length === currentKeys.length && initialKeys.reduce((acc, key) => {
-      return acc && (compareObjectFieldFn ?
-        compareObjectFieldFn(initialValue[key]) === compareObjectFieldFn(currentValue[key]) :
-        comparer(initialValue[key], currentValue[key], compareObjectFieldFn));
-    }, true);
-    return result;
+import { Diff, diff } from 'deep-diff';
+
+function hasNoChanges(diff: Diff<any, any>[] | undefined) {
+  return !diff;
+}
+
+export function comparer(initialValue: any, currentValue: any): boolean {
+  if (Array.isArray(initialValue)) {
+    for (let i = 0; i < initialValue.length; i++) {
+      const currentInitialValue = initialValue[i];
+      const differences = diff(currentInitialValue, currentValue);
+      if (hasNoChanges(differences)) { return true; }
+    }
+    return false;
   }
-  return initialValue === currentValue;
+  const differences = diff(initialValue, currentValue);
+  return hasNoChanges(differences);
 }

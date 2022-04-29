@@ -1,30 +1,38 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "es2015",
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
     "paths": {
       "form-control-change-tracker": [
         "dist/form-control-change-tracker/form-control-change-tracker",
         "dist/form-control-change-tracker"
       ]
-    }
+    },
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2017",
+    "module": "es2020",
+    "lib": [
+      "es2020",
+      "dom"
+    ]
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
+    "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "enableIvy": false
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   }
 }
