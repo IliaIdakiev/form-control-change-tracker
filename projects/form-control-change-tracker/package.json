@@ -1,10 +1,10 @@
 {
   "name": "form-control-change-tracker",
-  "version": "3.0.11",
+  "version": "3.0.12",
   "peerDependencies": {
-    "@angular/common": "^9.1.6",
-    "@angular/core": "^9.1.6",
-    "@angular/forms": "^9.1.6",
+    "@angular/common": "~13.3.0",
+    "@angular/core": "~13.3.0",
+    "@angular/forms": "~13.3.0",
     "tslib": "^1.10.0"
   },
   "author": {
