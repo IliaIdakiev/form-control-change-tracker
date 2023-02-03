@@ -26,7 +26,7 @@ export class ReactiveFormComponent {
 
   lastNameInitialValues = ['', '123'];
 
-  unpopulatedFormDefaultValues = {
+  unpopulatedFormDefaultValues: any = {
     firstName: '',
     lastName: '',
     gender: null,
@@ -44,7 +44,7 @@ export class ReactiveFormComponent {
     })
   });
 
-  populatedFormDefaultValues = {
+  populatedFormDefaultValues: any = {
     firstName: 'Test 1',
     lastName: 'Test 2',
     gender: 'male'
