@@ -1,11 +1,14 @@
 {
   "name": "form-control-change-tracker",
-  "version": "3.0.14",
+  "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "~13.3.0",
-    "@angular/core": "~13.3.0",
-    "@angular/forms": "~13.3.0",
-    "tslib": "^1.10.0"
+    "@angular/common": "^15.0.0",
+    "@angular/core": "^15.0.0",
+    "@angular/forms": "^15.0.0",
+    "deep-diff": "^1.0.2"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
   },
   "author": {
     "name": "Iliya Idakiev",
@@ -18,7 +21,6 @@
     "form control changes tracker",
     "tracking form changes",
     "form changes",
-    "angular",
-    "angular 9"
+    "angular"
   ]
 }

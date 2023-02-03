@@ -13,7 +13,7 @@ Has from changes: {{hasFormChanges}}
       <input type="text" name="lastName" formControlName="lastName" hgChangeTracker [multiInitialValue]="true"
         [initialValue]="lastNameInitialValues" />
       <span>Multiple initial values: {{lastNameInitialValues | json }}</span>
-      <button [disabled]="lastNameInitialValues.includes(unpopulatedForm.get('lastName')?.value)"
+      <button [disabled]="lastNameInitialValues.includes(unpopulatedForm.get('lastName')?.value!)"
         (click)="addToInitialValues(unpopulatedForm.get('lastName')?.value)">Add
         current value to initial values</button>
     </div>
