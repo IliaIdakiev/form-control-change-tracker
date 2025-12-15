@@ -16,8 +16,6 @@ Very often when developers need to know if there were any changes inside the a f
 
 - And the `@hasChanges()` decorator that is applied over the `ChangeTrackerDirective` directives in order to provide you a boolean value indicating if there are any changes or not.
 
-## Usage:
-
 ## Usage
 
 ### 1. New Container API (Recommended)
