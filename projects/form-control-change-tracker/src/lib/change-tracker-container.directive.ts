@@ -1,4 +1,4 @@
-import { Directive, OnDestroy, AfterContentInit } from '@angular/core';
+import { Directive, OnDestroy, AfterContentInit, output } from '@angular/core';
 import { ChangeTrackerDirective } from './change-tracker.directive';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 @Directive({
   selector: '[hgChangeTrackerContainer]',
   exportAs: 'hgChangeTrackerContainer',
+  standalone: true,
 })
 export class ChangeTrackerContainerDirective
   implements AfterContentInit, OnDestroy
@@ -14,7 +15,13 @@ export class ChangeTrackerContainerDirective
   private _isAlive = new Subject<void>();
 
   hasChanges = false;
-  hasChanges$ = new Subject<boolean>();
+  hasChanges$ = output<boolean>();
+
+  get dirtyTrackerNames() {
+    return Array.from(this._trackers)
+      .filter((t) => t.hasValueChanged)
+      .map((t) => t.name);
+  }
 
   register(tracker: ChangeTrackerDirective) {
     this._trackers.add(tracker);
@@ -49,7 +56,7 @@ export class ChangeTrackerContainerDirective
     }
     if (this.hasChanges !== hasChanges) {
       this.hasChanges = hasChanges;
-      this.hasChanges$.next(hasChanges);
+      this.hasChanges$.emit(hasChanges);
     }
   }
 

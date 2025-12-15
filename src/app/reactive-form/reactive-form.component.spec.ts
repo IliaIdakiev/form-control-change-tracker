@@ -1,4 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormControlChangeTrackerModule } from 'form-control-change-tracker';
 
 import { ReactiveFormComponent } from './reactive-form.component';
 
@@ -6,11 +8,11 @@ describe('ReactiveFormComponent', () => {
   let component: ReactiveFormComponent;
   let fixture: ComponentFixture<ReactiveFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReactiveFormComponent ]
-    })
-    .compileComponents();
+      imports: [ReactiveFormsModule, FormControlChangeTrackerModule],
+      declarations: [ReactiveFormComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

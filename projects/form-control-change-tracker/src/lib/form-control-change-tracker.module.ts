@@ -6,8 +6,7 @@ import { SimpleStrategy } from './strategies/simple-strategy';
 import { ChangeTrackerContainerDirective } from './change-tracker-container.directive';
 
 @NgModule({
-  declarations: [ChangeTrackerDirective, ChangeTrackerContainerDirective],
-  imports: [],
+  imports: [ChangeTrackerDirective, ChangeTrackerContainerDirective],
   exports: [ChangeTrackerDirective, ChangeTrackerContainerDirective],
   providers: [
     {

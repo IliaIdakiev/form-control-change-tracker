@@ -1,5 +1,6 @@
 import { ChangeTrackerContainerDirective } from './change-tracker-container.directive';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
 
 describe('ChangeTrackerContainerDirective', () => {
   let container: ChangeTrackerContainerDirective;
@@ -7,23 +8,31 @@ describe('ChangeTrackerContainerDirective', () => {
   let tracker2: any;
   let changes1$: Subject<boolean>;
   let changes2$: Subject<boolean>;
-  let isAlive1$: Subject<void>;
-  let isAlive2$: Subject<void>;
+  let isAlive1$: Observable<void>;
+  let isAlive2$: Observable<void>;
 
   function createMockTracker() {
     const changes$ = new Subject<boolean>();
-    const isAlive$ = new Subject<void>();
+    const isAliveSubject = new Subject<void>();
     return {
       changes: changes$.asObservable(),
       changes$,
-      isAlive$,
+      isAlive$: isAliveSubject.asObservable(),
+      // expose subject if needed, but maybe not needed for current tests
+      isAliveSubject,
       hasValueChanged: false,
       resync: jasmine.createSpy('resync'),
     };
   }
 
   beforeEach(() => {
-    container = new ChangeTrackerContainerDirective();
+    TestBed.configureTestingModule({
+      providers: [ChangeTrackerContainerDirective],
+    });
+
+    TestBed.runInInjectionContext(() => {
+      container = new ChangeTrackerContainerDirective();
+    });
 
     // Mock trackers
     const t1 = createMockTracker();

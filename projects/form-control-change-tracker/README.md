@@ -10,7 +10,7 @@
 
 | Angular Version | Library Version | Status            |
 | :-------------- | :-------------- | :---------------- |
-| **v19+**        | `^1.0.0`        | 🟢 Coming Soon    |
+| **v19+**        | `^1.0.0`        | 🟢 Stable         |
 | **v15 - v19**   | `0.0.4`         | 🟡 Legacy Support |
 
 ### Custom Comparison Strategy

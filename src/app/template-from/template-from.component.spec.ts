@@ -1,4 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { FormControlChangeTrackerModule } from 'form-control-change-tracker';
 
 import { TemplateFromComponent } from './template-from.component';
 
@@ -6,11 +8,11 @@ describe('TemplateFromComponent', () => {
   let component: TemplateFromComponent;
   let fixture: ComponentFixture<TemplateFromComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TemplateFromComponent ]
-    })
-    .compileComponents();
+      imports: [FormsModule, FormControlChangeTrackerModule],
+      declarations: [TemplateFromComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

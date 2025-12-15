@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 @Component({
-  selector: 'app-reactive-form',
-  templateUrl: './reactive-form.component.html',
-  styleUrls: ['./reactive-form.component.scss'],
+    selector: 'app-reactive-form',
+    templateUrl: './reactive-form.component.html',
+    styleUrls: ['./reactive-form.component.scss'],
+    standalone: false
 })
 export class ReactiveFormComponent {
   unpopulated = true;
