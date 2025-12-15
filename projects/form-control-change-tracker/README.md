@@ -6,6 +6,10 @@
 ![Angular](https://img.shields.io/badge/Angular-15+-dd0031.svg)
 [![CI](https://github.com/IliaIdakiev/form-control-change-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/IliaIdakiev/form-control-change-tracker/actions/workflows/ci.yml)
 
+## 🚀 Live Demo
+
+**[Try it on StackBlitz](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker)** - Interactive demo with reactive and template-driven forms (Angular 19)
+
 ## Version Compatibility
 
 | Angular Version | Library Version | Status            |
@@ -70,9 +74,58 @@ Very often when developers need to know if there were any changes inside the a f
 
 The new API allows you to track changes directly in your template without needing complex decorators.
 
-**app.module.ts**
+**Angular 19+ (Standalone Components)**
 
 ```typescript
+import { Component } from "@angular/core";
+import { ReactiveFormsModule, FormBuilder, FormGroup } from "@angular/forms";
+import { FormControlChangeTrackerModule } from "form-control-change-tracker";
+
+@Component({
+  selector: "app-my-form",
+  standalone: true,
+  imports: [ReactiveFormsModule, FormControlChangeTrackerModule],
+  template: `
+    <form [formGroup]="form" (ngSubmit)="submit()" hgChangeTrackerContainer #tracker="hgChangeTrackerContainer">
+      <div class="form-group">
+        <label>First Name</label>
+        <!-- Auto-captures initial value on init -->
+        <input formControlName="firstName" hgChangeTracker />
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input formControlName="lastName" hgChangeTracker />
+      </div>
+
+      <!-- Check for changes anywhere in the form -->
+      <button [disabled]="!tracker.hasChanges">Submit</button>
+
+      <!-- Reset initial/default values to current values -->
+      <button type="button" [disabled]="!tracker.hasChanges" (click)="tracker.resync()">Update Defaults</button>
+    </form>
+  `,
+})
+export class MyFormComponent {
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      firstName: [""],
+      lastName: [""],
+    });
+  }
+
+  submit() {
+    console.log("Form submitted:", this.form.value);
+  }
+}
+```
+
+**Legacy NgModule (Angular 15-18)**
+
+```typescript
+// app.module.ts
 imports: [
   // ...
   FormControlChangeTrackerModule,
