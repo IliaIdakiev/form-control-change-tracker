@@ -6,9 +6,57 @@
 ![Angular](https://img.shields.io/badge/Angular-15+-dd0031.svg)
 [![CI](https://github.com/IliaIdakiev/form-control-change-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/IliaIdakiev/form-control-change-tracker/actions/workflows/ci.yml)
 
+## Version Compatibility
+
+| Angular Version | Library Version | Status            |
+| :-------------- | :-------------- | :---------------- |
+| **v19+**        | `^1.0.0`        | 🟢 Coming Soon    |
+| **v15 - v19**   | `0.0.4`         | 🟡 Legacy Support |
+
 ### Custom Comparison Strategy
 
 The library uses a `SimpleStrategy` by default, which performs a fast reference check for primitives and a **key-order independent** deep comparison for objects. To use a different strategy (e.g., `deep-diff`):
+
+1.  **Install `deep-diff`** (or your preferred library):
+
+    ```bash
+    npm install deep-diff
+    npm install @types/deep-diff --save-dev
+    ```
+
+2.  **Create the Strategy**:
+
+    ```typescript
+    import { Injectable } from "@angular/core";
+    import { ComparisonStrategy } from "form-control-change-tracker";
+    import { diff } from "deep-diff";
+
+    @Injectable()
+    export class DeepDiffStrategy implements ComparisonStrategy {
+      isEqual(a: any, b: any): boolean {
+        // Returns true if no differences found
+        return !diff(a, b);
+      }
+    }
+    ```
+
+3.  **Provide it in your Module**:
+
+    ```typescript
+    import { HG_COMPARISON_STRATEGY } from "form-control-change-tracker";
+    import { DeepDiffStrategy } from "./strategies/deep-diff-strategy";
+
+    @NgModule({
+      // ...
+      providers: [
+        {
+          provide: HG_COMPARISON_STRATEGY,
+          useClass: DeepDiffStrategy,
+        },
+      ],
+    })
+    export class AppModule {}
+    ```
 
 Very often when developers need to know if there were any changes inside the a form in order to present a unsaved changes confirmation dialog when navigating away or in order to disable the save button when there is nothing new to save. The `FormControlChangeTrackerModule` provides two things:
 
