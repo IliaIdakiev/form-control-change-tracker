@@ -17,6 +17,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "deep-diff"
+            ],
             "outputPath": "dist/form-control-change-tracker-app",
             "index": "src/index.html",
             "main": "src/main.ts",

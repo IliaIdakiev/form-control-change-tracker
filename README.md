@@ -1,95 +1,99 @@
 # Angular Form Control Change Tracker
 
-Very often when developers need to know if there were any changes inside the a form in order to present a unsaved changes confirmation dialog when navigating away or in order to disable the save button when there is nothing new to save. The `FormControlChangeTrackerModule` provides two things: 
+[![npm version](https://img.shields.io/npm/v/form-control-change-tracker.svg)](https://www.npmjs.com/package/form-control-change-tracker)
+[![npm downloads](https://img.shields.io/npm/dm/form-control-change-tracker.svg)](https://www.npmjs.com/package/form-control-change-tracker)
+[![License](https://img.shields.io/npm/l/form-control-change-tracker.svg)](https://www.npmjs.com/package/form-control-change-tracker)
+![Angular](https://img.shields.io/badge/Angular-15+-dd0031.svg)
+[![CI](https://github.com/IliaIdakiev/form-control-change-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/IliaIdakiev/form-control-change-tracker/actions/workflows/ci.yml)
 
-* The `ChangeTrackerDirective (hgChangeTracker)` that can be set on the individual form controls in order to track if any changes are made 
+### Custom Comparison Strategy
 
-* And the `@hasChanges()` decorator that is applied over the `ChangeTrackerDirective` directives in order to provide you a boolean value indicating if there are any changes or not.
+The library uses a `SimpleStrategy` by default, which performs a fast reference check for primitives and a **key-order independent** deep comparison for objects. To use a different strategy (e.g., `deep-diff`):
+
+Very often when developers need to know if there were any changes inside the a form in order to present a unsaved changes confirmation dialog when navigating away or in order to disable the save button when there is nothing new to save. The `FormControlChangeTrackerModule` provides two things:
+
+- The `ChangeTrackerDirective (hgChangeTracker)` that can be set on the individual form controls in order to track if any changes are made
+
+- And the `@hasChanges()` decorator that is applied over the `ChangeTrackerDirective` directives in order to provide you a boolean value indicating if there are any changes or not.
 
 ## Usage:
 
-1. Import the module
+## Usage
 
-your.module.ts
+### 1. New Container API (Recommended)
+
+The new API allows you to track changes directly in your template without needing complex decorators.
+
+**app.module.ts**
+
 ```typescript
-@NgModule({
-  ...
-  imports: [
-    ...
-    FormControlChangeTrackerModule
-  ]
-})
-export class AppModule { }
+imports: [
+  // ...
+  FormControlChangeTrackerModule,
+];
 ```
-2. Add the directives and bind the initial value for each one.(the current example is using reactive forms but the module can be used with template driven forms as well. [Check out the demo app](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker))
 
-your.component.html
+**template**
+
 ```html
-<form [formGroup]="form" (ngSubmit)="submit()">
+<form [formGroup]="form" (ngSubmit)="submit()" hgChangeTrackerContainer #tracker="hgChangeTrackerContainer">
   <div class="form-group">
     <label>First Name</label>
-    <input type="text" name="firstName" formControlName="firstName" hgChangeTracker
-      [initialValue]="firstNameDefaultValue" />
+    <!-- Auto-captures initial value on init -->
+    <input formControlName="firstName" hgChangeTracker />
   </div>
+
   <div class="form-group">
     <label>Last Name</label>
-    <input type="text" name="lastName" formControlName="lastName" hgChangeTracker
-      [initialValue]="lastNameDefaultValue" />
+    <input formControlName="lastName" hgChangeTracker />
   </div>
-  <button [disabled]="!hasFormChanges">Submit</button>
+
+  <!-- Check for changes anywhere in the form -->
+  <button [disabled]="!tracker.hasChanges">Submit</button>
+
+  <!-- Reset initial/default values to current values -->
+  <button [disabled]="!tracker.hasChanges" (click)="tracker.resync()">Update Defaults</button>
 </form>
 ```
 
-3. Get the `hasFormChanges` value
+### 2. Configuration Options
 
-your.component.ts
+**Debounce Time**
+Adjust the debounce time for change detection (default: 20ms).
+
+```html
+<input hgChangeTracker [debounceTime]="300" />
+```
+
+**Multi-Initial Values**
+Allow multiple values to be considered "valid" (unchanged).
+
+```html
+<input hgChangeTracker [multiInitialValue]="true" [initialValue]="['A', 'B']" />
+```
+
+**Auto-Sync**
+Control whether the directive automatically captures the initial value.
+
+```html
+<!-- Disable auto sync if you want full manual control -->
+<input hgChangeTracker [autoInitialValueSync]="false" [initialValue]="startValue" />
+```
+
+### 3. Legacy Decorator API
+
+The library serves backward compatibility for the `@hasChanges()` decorator usage.
+
 ```typescript
-@Component({
-  ...
-})
-export class TemplateFromComponent {
-
+@Component({...})
+export class MyComponent {
   @ViewChildren(ChangeTrackerDirective) @hasChanges() hasFormChanges: boolean;
-
-  ...
-
 }
 ```
 
-**[Check out the demo app](https://stackblitz.com/github/IliaIdakiev/form-control-change-tracker)**
+## Features
 
-4. More configurations
-
-### Decorator configuration
-
-your.component.ts
-```typescript
-@Component({
-  ...
-})
-export class TemplateFromComponent {
-
-  // ChangesWithValues<T> { hasChanges: boolean; values: { [P in keyof T]: { current: T[P]; initial: T[P]; }; }; } (very useful for debugging)
-  @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData: ChangesWithValues<T>;
-  ...
-}
-```
-
-### Inputs
-
-change-tracker.directive
-```typescript 
-@Directive({
-  selector: '[ngModel][hgChangeTracker],[formControl][hgChangeTracker],[formControlName][hgChangeTracker]',
-  exportAs: 'hgChangeTracker'
-})
-export class ChangeTrackerDirective {
-
-  @Input() multiInitialValue = false; // used for multiple initial values
-  @Input() autoInitialValueSync = true; // it can be used to disable the auto syncing of initialValue input
-
-  // whenever the auto sync is disabled this method needs to be manually called in order for the new initial value to be set
-  // keep in mind that the newValue is optional and if omitted the last change of the initialValue binding will be the new initial value
-  resetInitialValue(newValue?: T) { ... }
-}
-```
+- **Deep Comparison**: Uses deep-diff strategies to correctly track object changes.
+- **Reactive**: Built on RxJS for efficient change detection.
+- **Debounced**: Prevents UI thrashing on high-frequency inputs.
+- **Container Support**: Easily aggregate change status for an entire form.

@@ -1,27 +1,12 @@
-import { Component, ViewChildren, QueryList } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ChangeTrackerDirective, hasChanges } from 'form-control-change-tracker';
-import { ChangesWithValues } from 'form-control-change-tracker';
-
-// Creating such interface is optional
-interface FormValues {
-  firstName: string;
-  lastName: string;
-  gender: string;
-}
 
 @Component({
   selector: 'app-reactive-form',
   templateUrl: './reactive-form.component.html',
-  styleUrls: ['./reactive-form.component.scss']
+  styleUrls: ['./reactive-form.component.scss'],
 })
 export class ReactiveFormComponent {
-
-  // ChangesWithValues has a default generic of any so you are not obligated creating an interface.
-  @ViewChildren(ChangeTrackerDirective) @hasChanges({ includeChangedValues: true }) formChangesData!: ChangesWithValues<FormValues>;
-  @ViewChildren(ChangeTrackerDirective) changeTrackers!: QueryList<ChangeTrackerDirective>;
-  get hasFormChanges() { return this.formChangesData.hasChanges; }
-
   unpopulated = true;
 
   lastNameInitialValues = ['', '123'];
@@ -31,8 +16,8 @@ export class ReactiveFormComponent {
     lastName: '',
     gender: null,
     group: {
-      test: '1'
-    }
+      test: '1',
+    },
   };
 
   unpopulatedForm = this.fb.group({
@@ -40,26 +25,28 @@ export class ReactiveFormComponent {
     lastName: [this.unpopulatedFormDefaultValues.lastName],
     gender: [this.unpopulatedFormDefaultValues.gender],
     group: this.fb.group({
-      test: [this.unpopulatedFormDefaultValues.group.test]
-    })
+      test: [this.unpopulatedFormDefaultValues.group.test],
+    }),
   });
 
   populatedFormDefaultValues: any = {
     firstName: 'Test 1',
     lastName: 'Test 2',
-    gender: 'male'
+    gender: 'male',
   };
 
   populatedForm = this.fb.group({
     firstName: [this.populatedFormDefaultValues.firstName],
     lastName: [this.populatedFormDefaultValues.lastName],
-    gender: [this.populatedFormDefaultValues.gender]
+    gender: [this.populatedFormDefaultValues.gender],
   });
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) {}
 
   addToInitialValues(value: any) {
-    if (this.lastNameInitialValues.includes(value)) { return; }
+    if (this.lastNameInitialValues.includes(value)) {
+      return;
+    }
     this.lastNameInitialValues = this.lastNameInitialValues.concat(value);
   }
 
